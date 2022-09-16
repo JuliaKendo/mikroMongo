@@ -17,7 +17,9 @@ env.read_env()
 
 app = Flask(__name__)
 
-client = MongoClient('0.0.0.0:27017')
+client = MongoClient(
+    env.str('DB_CONNECTION_STRING')
+)
 db = client[env.str('DB_NAME')]
 
 
