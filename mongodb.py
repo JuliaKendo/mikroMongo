@@ -1,4 +1,5 @@
 import functools
+from requests.exceptions import HTTPError
 from pymongo.errors import CollectionInvalid
 
 
@@ -11,10 +12,8 @@ def handle_errors():
                     return func(db, collection_name, *args)
                 except CollectionInvalid:
                     return f'collection {collection_name} is exist'
-                except ConnectionError:
+                except (ConnectionError, HTTPError):
                     continue
-                finally:
-                    pass
         return run_func
     return wrap
 

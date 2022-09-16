@@ -1,3 +1,5 @@
+import logging
+import sys
 from environs import Env
 from contextlib import suppress
 from pymongo import MongoClient
@@ -11,6 +13,7 @@ from mongodb import (
     get_elements
 )
 
+logger = logging.getLogger('mongodb_api')
 
 env = Env()
 env.read_env()
@@ -41,6 +44,7 @@ def handle_collection():
         collection_name, action, *__ = params.split('&')
         collection_info = actions[action.strip().upper()](db, collection_name.strip())
         return collection_info
+    logger.exception('Unsupported query params')
     return 'Check query params'
 
 
@@ -54,8 +58,25 @@ def handle_entries():
             db, collection_name.strip(), [loads(entry) for entry in entries]
         )
         return dumps(entries_info)
+    logger.exception('Unsupported query params')
     return 'Check query params'
 
 
+def main():
+    logging.basicConfig(
+        filename='mikroMongo.log',
+        filemode='w',
+        level=logging.DEBUG,
+        format='%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+    )
+
+    logger.debug('Server start')
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        sys.stderr.write('Server shut down')
+    logger.debug('Server shut down')
+
+
 if __name__ == '__main__':
-    app.run()
+    main()
