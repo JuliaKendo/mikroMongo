@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mikro MONGO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+</head>
+<body>
+    <div class="nav-container">
+        <h1>Mikro MONGO</h1>
+        <p>About</p>
+    </div>
+    <div class="content-container">
+        <form id="main-form" class="content-container__form">
+            <label class="content-container__title">
+                Set a request for Mongo DB:
+                <div class="content-container__query-set">
+                    <select id="query-type">
+                        <option selected="true" disabled="disabled" value="POST">POST</option>
+                        <option disabled="disabled" value="GET">GET</option>
+                    </select>
+                    <select class="query">
+                        <option selected="true" value="submit">submit</option>
+                        <option value="collection">collection</option>
+                        <option value="entries">entries</option>
+                    </select>
+                    <input class="param" type="text" placeholder="" name="param">
+                </div>
+            </label>
+            <textarea 
+                name="result" 
+                placeholder="query result" 
+                class="content-container__result"
+            ></textarea>
+            <button 
+                id="submit-button"
+                class="content-container__button" 
+                type="submit">
+                Send
+            </button>
+            <button 
+                class="content-container__button" 
+                type="reset">
+                Cancel
+            </button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename= 'js/script.js') }}"></script>
+</body>
+</html>

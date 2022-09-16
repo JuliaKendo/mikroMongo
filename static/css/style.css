@@ -1,0 +1,75 @@
+:root {
+    --main-background: gainsboro;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.nav-container {
+    display: flex;
+    background-color: var(--main-background);
+    height: 50px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.nav-container h1 {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.content-container__form {
+    border: 1px solid gainsboro;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+    width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.content-container__title {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.content-container__query-set {
+    display: flex;
+    padding-top: 10px;
+}
+
+.content-container__query-set input {
+    width: 100%;
+}
+
+.content-container__query-set select {
+    margin-right: 10px;
+    width: 100px;
+}
+
+.content-container__result {
+    border: none;
+    height: 300px;
+    width: 100%;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+}
+
+.content-container__button {
+    border: none;
+    background-color: var(--main-background);
+    height: 30px;
+    border-radius: 5px;
+    box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+}
