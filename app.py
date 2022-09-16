@@ -2,12 +2,13 @@ import logging
 import sys
 from environs import Env
 from contextlib import suppress
-from pymongo import MongoClient
 from bson.json_util import dumps, loads
 from flask import Flask, render_template, request
 
+import settings
 from notify_rollbar import notify_rollbar
 from mongodb import (
+    get_server_info,
     create_collection,
     drop_collection,
     write_elements,
@@ -21,11 +22,6 @@ env.read_env()
 
 app = Flask(__name__)
 
-client = MongoClient(
-    env.str('DB_CONNECTION_STRING')
-)
-db = client[env.str('DB_NAME')]
-
 
 @app.route('/')
 def show_main_page():
@@ -35,7 +31,7 @@ def show_main_page():
 @app.route('/submit', methods=['POST'])
 @notify_rollbar()
 def get_db_info():
-    return client.server_info()
+    return get_server_info(env.str('DB_CONNECTION_STRING'))
 
 
 @app.route('/collection', methods=['POST'])
@@ -45,7 +41,11 @@ def handle_collection():
         actions = {'CREATE': create_collection, 'DROP': drop_collection}
         params = request.json['params']
         collection_name, action, *__ = params.split('&')
-        collection_info = actions[action.strip().upper()](db, collection_name.strip())
+        collection_info = actions[action.strip().upper()](
+            env.str('DB_CONNECTION_STRING'),
+            env.str('DB_NAME'),
+            collection_name.strip()
+        )
         return collection_info
     logger.exception('Unsupported query params')
     return 'Check query params'
@@ -59,7 +59,10 @@ def handle_entries():
         params = request.json['params']
         collection_name, action, *entries = params.split('&')
         entries_info = actions[action.strip().upper()](
-            db, collection_name.strip(), [loads(entry) for entry in entries]
+            env.str('DB_CONNECTION_STRING'),
+            env.str('DB_NAME'),
+            collection_name.strip(),
+            [loads(entry) for entry in entries]
         )
         return dumps(entries_info)
     logger.exception('Unsupported query params')
@@ -67,6 +70,7 @@ def handle_entries():
 
 
 def main():
+    settings.init()
     logging.basicConfig(
         filename='mikroMongo.log',
         filemode='w',
