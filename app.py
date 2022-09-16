@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from bson.json_util import dumps, loads
 from flask import Flask, render_template, request
 
+from notify_rollbar import notify_rollbar
 from mongodb import (
     create_collection,
     drop_collection,
@@ -32,11 +33,13 @@ def show_main_page():
 
 
 @app.route('/submit', methods=['POST'])
+@notify_rollbar()
 def get_db_info():
     return client.server_info()
 
 
 @app.route('/collection', methods=['POST'])
+@notify_rollbar()
 def handle_collection():
     with suppress(ValueError, TypeError, NameError):
         actions = {'CREATE': create_collection, 'DROP': drop_collection}
@@ -49,6 +52,7 @@ def handle_collection():
 
 
 @app.route('/entries', methods=['POST'])
+@notify_rollbar()
 def handle_entries():
     with suppress(ValueError, TypeError, NameError):
         actions = {'INSERT': write_elements, 'FIND': get_elements}

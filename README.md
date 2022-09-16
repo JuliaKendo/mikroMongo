@@ -29,6 +29,7 @@ $ . env/bin/activate
 
 `DB_NAME` - Имя базы данных.
 `DB_CONNECTION_STRING` - Строка подключения к серверу mongo db (0.0.0.0:27017).
+`ROLLBAR_TOKEN` - Токен rollbar.
 
 # Процедура запуска
 
