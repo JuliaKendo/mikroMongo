@@ -3,10 +3,10 @@ import logging
 import functools
 from environs import Env
 from bson.json_util import dumps, loads
-from flask import Flask, render_template, request
+from quart import Quart, render_template, request
 
 import settings
-from notify_rollbar import notify_rollbar
+from notify_rollbar import anotify_rollbar
 from exceptions import (
     SLUG_TO_EXCEPTIONS_TITLE as slugs_of_failure,
     get_slug_of_failure
@@ -27,7 +27,7 @@ logger = logging.getLogger('mongodb_api')
 env = Env()
 env.read_env()
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 commands = {
     'SHOW': show_statistics,
@@ -43,9 +43,9 @@ commands = {
 def handle_errors():
     def wrap(func):
         @functools.wraps(func)
-        def run_func():
+        async def run_func():
             try:
-                return func()
+                return await func()
             except Exception as exe:
                 title_of_error = slugs_of_failure.get(
                     get_slug_of_failure(exe), ''
@@ -58,22 +58,22 @@ def handle_errors():
 
 
 @app.route('/')
-def show_main_page():
-    return render_template('index.html')
+async def show_main_page():
+    return await render_template('index.html')
 
 
 @app.route('/submit', methods=['POST'])
-@notify_rollbar()
-def get_db_info():
+@anotify_rollbar()
+async def get_db_info():
     return get_server_info(env.str('DB_CONNECTION_STRING'))
 
 
 @app.route('/statistic', methods=['POST'])
-@notify_rollbar()
+@anotify_rollbar()
 @handle_errors()
-def handle_statistic():
-    request_params = request.json['params']
-    action, *__ = request_params.split('&')
+async def handle_statistic():
+    request_params = await request.get_json()
+    action, *__ = request_params['params'].split('&')
     collections_info = commands[action.strip().upper()](
         env.str('DB_CONNECTION_STRING'),
         env.str('DB_NAME'),
@@ -82,11 +82,11 @@ def handle_statistic():
 
 
 @app.route('/collection', methods=['POST'])
-@notify_rollbar()
+@anotify_rollbar()
 @handle_errors()
-def handle_collection():
-    request_params = request.json['params']
-    collection_name, action, *__ = request_params.split('&')
+async def handle_collection():
+    request_params = await request.get_json()
+    collection_name, action, *__ = request_params['params'].split('&')
     collection_info = commands[action.strip().upper()](
         env.str('DB_CONNECTION_STRING'),
         env.str('DB_NAME'),
@@ -96,11 +96,11 @@ def handle_collection():
 
 
 @app.route('/entries', methods=['POST'])
-@notify_rollbar()
+@anotify_rollbar()
 @handle_errors()
-def handle_entries():
-    request_params = request.json['params']
-    collection_name, action, *entries = request_params.split('&')
+async def handle_entries():
+    request_params = await request.get_json()
+    collection_name, action, *entries = request_params['params'].split('&')
     command = action.strip().upper()
     params = [loads(entry) for entry in entries]
     if command == 'UPDATE':
