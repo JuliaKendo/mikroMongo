@@ -12,14 +12,14 @@ from exceptions import (
     get_slug_of_failure
 )
 from mongodb import (
-    get_server_info,
-    show_statistics,
-    create_collection,
-    drop_collection,
-    write_elements,
-    get_elements,
-    update_elements,
-    delete_elements
+    aget_server_info,
+    ashow_statistics,
+    acreate_collection,
+    adrop_collection,
+    awrite_elements,
+    aget_elements,
+    aupdate_elements,
+    adelete_elements
 )
 
 logger = logging.getLogger('mongodb_api')
@@ -30,13 +30,13 @@ env.read_env()
 app = Quart(__name__)
 
 commands = {
-    'SHOW': show_statistics,
-    'CREATE': create_collection,
-    'DROP': drop_collection,
-    'INSERT': write_elements,
-    'FIND': get_elements,
-    'UPDATE': update_elements,
-    'DELETE': delete_elements
+    'SHOW': ashow_statistics,
+    'CREATE': acreate_collection,
+    'DROP': adrop_collection,
+    'INSERT': awrite_elements,
+    'FIND': aget_elements,
+    'UPDATE': aupdate_elements,
+    'DELETE': adelete_elements
 }
 
 
@@ -65,7 +65,7 @@ async def show_main_page():
 @app.route('/submit', methods=['POST'])
 @anotify_rollbar()
 async def get_db_info():
-    return get_server_info(env.str('DB_CONNECTION_STRING'))
+    return await aget_server_info(env.str('DB_CONNECTION_STRING'))
 
 
 @app.route('/statistic', methods=['POST'])
@@ -74,7 +74,7 @@ async def get_db_info():
 async def handle_statistic():
     request_params = await request.get_json()
     action, *__ = request_params['params'].split('&')
-    collections_info = commands[action.strip().upper()](
+    collections_info = await commands[action.strip().upper()](
         env.str('DB_CONNECTION_STRING'),
         env.str('DB_NAME'),
     )
@@ -87,7 +87,7 @@ async def handle_statistic():
 async def handle_collection():
     request_params = await request.get_json()
     collection_name, action, *__ = request_params['params'].split('&')
-    collection_info = commands[action.strip().upper()](
+    collection_info = await commands[action.strip().upper()](
         env.str('DB_CONNECTION_STRING'),
         env.str('DB_NAME'),
         collection_name.strip()
@@ -104,14 +104,14 @@ async def handle_entries():
     command = action.strip().upper()
     params = [loads(entry) for entry in entries]
     if command == 'UPDATE':
-        entries_info = commands[command](
+        entries_info = await commands[command](
             env.str('DB_CONNECTION_STRING'),
             env.str('DB_NAME'),
             collection_name.strip(),
             filter=params[0], elements=params[1:]
         )
     else:
-        entries_info = commands[command](
+        entries_info = await commands[command](
             env.str('DB_CONNECTION_STRING'),
             env.str('DB_NAME'),
             collection_name.strip(),
