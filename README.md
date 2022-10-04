@@ -25,6 +25,11 @@ $ . env/bin/activate
 
 Запустите базу данных Mongo DB, локально или в докере. Информацию по развертыванию сервера MongoDB можно найти в официальной документации [www.mongodb.com](https://www.mongodb.com/docs/manual/installation/)
 
+Для запуска в докере выполните:
+```
+docker-compose up -d
+```
+
 
 ## Установите переменные окружения
 

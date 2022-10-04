@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mikroMongo
+    restart: unless-stopped
+    environment:
+      MONGODB_DATA_DIR: /data/db
+    volumes:
+     - $PWD/mongo-data:/data/db
+    ports:
+     - "27017:27017"
