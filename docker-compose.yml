@@ -3,11 +3,25 @@ version: '3.2'
 services:
   mongodb:
     image: mongo:latest
-    container_name: mikroMongo
+    container_name: mongo
     restart: unless-stopped
     environment:
       MONGODB_DATA_DIR: /data/db
     volumes:
      - $PWD/mongo-data:/data/db
     ports:
-     - "27017:27017"
+      - 27017:27017
+
+  app:
+    build: ./
+    container_name: mikroApp
+    restart: unless-stopped
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - 80:80
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+  

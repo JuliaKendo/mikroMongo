@@ -23,11 +23,18 @@ from mongodb import (
 )
 
 logger = logging.getLogger('mongodb_api')
+logging.basicConfig(
+    filename='mikroMongo.log',
+    filemode='w',
+    level=logging.DEBUG,
+    format='%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+)
 
 env = Env()
 env.read_env()
 
 app = Quart(__name__)
+settings.init()
 
 commands = {
     'SHOW': ashow_statistics,
@@ -121,13 +128,6 @@ async def handle_entries():
 
 
 def main():
-    settings.init()
-    logging.basicConfig(
-        filename='mikroMongo.log',
-        filemode='w',
-        level=logging.DEBUG,
-        format='%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
-    )
 
     logger.debug('Server start')
     try:

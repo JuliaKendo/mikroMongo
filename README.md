@@ -65,7 +65,7 @@ collection.html?highlight=collection)
 - Следующий параметр это json строка с данными
 Результат выполнения по кнопке Send, отображается в текстовом поле ниже на форме.
 
-## Примеры запросов
+## Примеры запросов web интерфейса
 
 ```Test&insert&{"id":1, "item":"вода серебряная", "qty":1}``` - добавить запись
 
@@ -74,3 +74,9 @@ collection.html?highlight=collection)
 ```Test&update&{"id":1}&{"$set": {"qty":2}}``` - обновить запись
 
 ```Test&delete&{"id":1}``` - удалить запись
+
+## Примеры запросов curl
+
+```curl -d '{"params":"show"}' -H "Content-Type: application/json" -X POST http://0.0.0.0/statistic``` - показать статистику по базе данных
+
+```curl -d '{"params":"Test&find&{\"id\":1}"}' -H "Content-Type: application/json" -X POST http://0.0.0.0/entries``` - найти запись

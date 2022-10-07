@@ -1,0 +1,17 @@
+{
+    "listeners": {
+        "*:80": {
+            "pass": "applications/microMongo"
+        }
+    },
+
+    "applications": {
+        "microMongo": {
+            "type": "python 3.9",
+            "path": "/usr/src/app",
+            "home": "/usr/local",
+            "module": "app",
+            "callable": "app"
+        }
+    }
+}
